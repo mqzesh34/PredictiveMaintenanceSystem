@@ -7,12 +7,10 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const app = require("./app");
+const { BACKEND_PORT, CLIENT_URL } = require("./config/env");
 const connectDB = require("./config/db");
 const startMqttClient = require("./service/mqttService");
 const registerSocketHandlers = require("./socket/registerSocketHandlers");
-
-const PORT = process.env.BACKEND_PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 function createSocketServer(server) {
   const io = new Server(server, {
@@ -28,13 +26,15 @@ function createSocketServer(server) {
 }
 
 function listen(server) {
-  server.listen(PORT, () => {
-    console.log(`Backend servisi ${PORT} üzerinde çalışıyor`);
+  server.listen(BACKEND_PORT, () => {
+    console.log(`Backend servisi ${BACKEND_PORT} üzerinde çalışıyor`);
   });
 
   server.on("error", (err) => {
     if (err.code === "EADDRINUSE") {
-      console.error(`${PORT} portu kullanımda. BACKEND_PORT değerini değiştir.`);
+      console.error(
+        `${BACKEND_PORT} portu kullanımda. BACKEND_PORT değerini değiştir.`,
+      );
       process.exit(1);
     }
 

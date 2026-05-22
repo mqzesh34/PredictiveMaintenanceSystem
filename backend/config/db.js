@@ -1,11 +1,9 @@
 const mongoose = require("mongoose");
+const { MONGO_URI } = require("./env");
 
 async function connectDB() {
-  const mongoUri =
-    process.env.MONGO_URI || "mongodb://localhost:27017/predictive_maintenance";
-
   try {
-    await mongoose.connect(mongoUri);
+    await mongoose.connect(MONGO_URI);
     console.log("MongoDB'ye bağlandı.");
   } catch (err) {
     console.error("MongoDB bağlantı hatası:", err.message);
