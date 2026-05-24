@@ -3,7 +3,11 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { env } from "../config/env";
 import type { TelemetryData } from "../types/telemetry";
 
-type MetricKey = "airTemperature" | "rotationalSpeed" | "torque";
+type MetricKey =
+  | "airTemperature"
+  | "processTemperature"
+  | "rotationalSpeed"
+  | "torque";
 
 type ChartPoint = {
   name: number;
@@ -30,6 +34,9 @@ const formatChartTime = (timestamp?: string) => {
     .format(new Date(timestamp))
     .replaceAll(":", ".");
 };
+
+const getToolWearPercentage = (value = 0) =>
+  Math.min((value / env.maxToolWear) * 100, 100);
 
 const buildAveragedChartData = (
   history: TelemetryData[],
@@ -197,7 +204,8 @@ function LineMetricCard({
 }
 
 function ToolWearCard({ value = 0 }: { value?: number }) {
-  const progressWidth = `${Math.min((value / env.maxToolWear) * 100, 100)}%`;
+  const wearPercentage = getToolWearPercentage(value);
+  const progressWidth = `${wearPercentage}%`;
   const barColorClass =
     value >= env.maxToolWear
       ? "bg-red-500"
@@ -225,8 +233,8 @@ function ToolWearCard({ value = 0 }: { value?: number }) {
           <p
             className={`shrink-0 font-mono text-3xl font-semibold ${textColorClass}`}
           >
-            {formatValue(value, 0)}{" "}
-            <span className="text-base text-zinc-400">min</span>
+            {formatValue(wearPercentage, 0)}{" "}
+            <span className="text-base text-zinc-400">%</span>
           </p>
         </div>
       </div>
@@ -239,8 +247,8 @@ function ToolWearCard({ value = 0 }: { value?: number }) {
           />
         </div>
         <div className="mt-3 flex justify-between font-mono text-xs text-zinc-500 tabular-nums">
-          <span>0</span>
-          <span>{env.maxToolWear}</span>
+          <span>0%</span>
+          <span>100%</span>
         </div>
       </div>
     </div>

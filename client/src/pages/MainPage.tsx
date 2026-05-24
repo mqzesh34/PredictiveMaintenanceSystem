@@ -22,12 +22,12 @@ function MainPage() {
         <section className="grid min-h-0 grid-cols-2 grid-rows-[1fr_1fr_1.55fr] gap-6">
           <div className={panelClass}>
             <LineMetricCard
-              title="Hava Sıcaklığı"
-              value={data?.airTemperature}
+              title="Makine Sıcaklığı"
+              value={data?.processTemperature}
               unit="K"
               color="#f59e0b"
               textColorClass="text-amber-300"
-              dataKey="airTemperature"
+              dataKey="processTemperature"
               history={history}
             />
           </div>

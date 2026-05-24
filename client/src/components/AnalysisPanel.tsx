@@ -1,15 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Activity,
-  AlertTriangle,
-  Gauge,
-  Loader2,
-  Tag,
-  Thermometer,
-  Wrench,
-  Zap,
-} from "lucide-react";
+import { Activity } from "lucide-react";
 import { createAiRecommendation } from "../api/aiApi";
+import { env } from "../config/env";
 import type { TelemetryData } from "../types/telemetry";
 
 const FAILURE_FIELDS = [
@@ -36,6 +28,18 @@ const formatValue = (value?: number, fractionDigits = 1) => {
 
 const getFailureItems = (failure: TelemetryData) =>
   FAILURE_FIELDS.filter(([key]) => failure[key] === 1);
+
+const getToolWearTextColorClass = (value = 0) =>
+  value >= env.maxToolWear
+    ? "text-red-400"
+    : value >= env.maxToolWear * 0.75
+      ? "text-orange-300"
+      : value >= env.maxToolWear * 0.5
+        ? "text-yellow-300"
+        : "text-emerald-400";
+
+const getToolWearPercentage = (value = 0) =>
+  Math.min((value / env.maxToolWear) * 100, 100);
 
 type MetricInsight = {
   title: string;
@@ -303,70 +307,66 @@ function AnalysisPanel({ selectedFailure }: { selectedFailure: TelemetryData | n
         <div className="mt-8 space-y-6">
           <div className="grid grid-cols-2 gap-x-5 gap-y-4 border-t border-white/10 pt-5">
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
-                <Thermometer size={15} />
+              <div className="text-xs uppercase tracking-wide text-zinc-500">
                 Hava Sıcaklığı
               </div>
-              <p className="mt-2 font-mono text-xl text-amber-200">
+              <p className="mt-2 font-mono text-xl text-amber-300">
                 {formatValue(selectedFailure.airTemperature)} K
               </p>
             </div>
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
-                <Thermometer size={15} />
+              <div className="text-xs uppercase tracking-wide text-zinc-500">
                 Makine Sıcaklığı
               </div>
-              <p className="mt-2 font-mono text-xl text-orange-200">
+              <p className="mt-2 font-mono text-xl text-amber-300">
                 {formatValue(selectedFailure.processTemperature)} K
               </p>
             </div>
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
-                <Gauge size={15} />
+              <div className="text-xs uppercase tracking-wide text-zinc-500">
                 Devir
               </div>
-              <p className="mt-2 font-mono text-xl text-blue-200">
+              <p className="mt-2 font-mono text-xl text-blue-300">
                 {formatValue(selectedFailure.rotationalSpeed, 0)} rpm
               </p>
             </div>
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
-                <Wrench size={15} />
+              <div className="text-xs uppercase tracking-wide text-zinc-500">
                 Aşınma
               </div>
-              <p className="mt-2 font-mono text-xl text-emerald-200">
-                {formatValue(selectedFailure.toolWear, 0)} min
+              <p
+                className={`mt-2 font-mono text-xl ${getToolWearTextColorClass(
+                  selectedFailure.toolWear,
+                )}`}
+              >
+                {formatValue(getToolWearPercentage(selectedFailure.toolWear), 0)} %
               </p>
             </div>
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
-                <Zap size={15} />
+              <div className="text-xs uppercase tracking-wide text-zinc-500">
                 Tork
               </div>
-              <p className="mt-2 font-mono text-xl text-red-200">
+              <p className="mt-2 font-mono text-xl text-emerald-300">
                 {formatValue(selectedFailure.torque)} Nm
               </p>
             </div>
             <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-zinc-500">
-                <Tag size={15} />
+              <div className="text-xs uppercase tracking-wide text-zinc-500">
                 Tip
               </div>
-              <p className="mt-2 font-mono text-xl text-violet-200">
+              <p className="mt-2 font-mono text-xl text-zinc-100">
                 {selectedFailure.type ?? "--"}
               </p>
             </div>
           </div>
 
           <div className="border-t border-white/10 pt-5">
-            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-zinc-300">
-              <Activity size={18} className="text-emerald-300" />
+            <div className="mb-3 text-sm font-medium text-zinc-300">
               Yapay Zeka Analizi
             </div>
             <div className="min-h-28">
               {isLoading && recommendation === "" ? (
-                <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/3 p-4 text-sm text-zinc-400">
-                  <Loader2 size={18} className="animate-spin" />
+                <div className="rounded-lg border border-white/10 bg-white/3 p-4 text-sm text-zinc-400">
                   Gemini öneri hazırlıyor
                 </div>
               ) : errorMessage !== "" ? (
@@ -378,8 +378,7 @@ function AnalysisPanel({ selectedFailure }: { selectedFailure: TelemetryData | n
                 <div className="space-y-3">
                   {parsedRecommendation.cause !== "" && (
                     <div className="rounded-lg border border-amber-300/20 bg-amber-400/10 p-4">
-                      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-200">
-                        <AlertTriangle size={15} />
+                      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-200">
                         Olası Neden
                       </div>
                       <p className="text-sm leading-6 text-zinc-100">
@@ -395,8 +394,7 @@ function AnalysisPanel({ selectedFailure }: { selectedFailure: TelemetryData | n
                           key={`${metric.title}-${metric.detail}`}
                           className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-3"
                         >
-                          <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                            <Gauge size={15} className="text-blue-300" />
+                          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
                             {metric.title}
                           </div>
                           <p className="text-sm leading-6 text-zinc-300">
