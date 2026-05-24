@@ -32,7 +32,21 @@ const getLatestFailures = async (_req, res) => {
   }
 };
 
+const getAllFailures = async (_req, res) => {
+  try {
+    const failures = await Telemetry.find({ machineFailure: 1 })
+      .sort({ timestamp: 1 })
+      .lean();
+
+    res.json(failures);
+  } catch (err) {
+    console.error("Tüm hata verileri alınamadı:", err.message);
+    res.status(500).json({ message: "Hata verileri alınamadı." });
+  }
+};
+
 module.exports = {
+  getAllFailures,
   getLatestTelemetry,
   getLatestFailures,
 };

@@ -20,3 +20,13 @@ export async function getLatestFailures() {
 
   return (await response.json()) as TelemetryData[];
 }
+
+export async function getAllFailures() {
+  const response = await fetch(`${env.telemetryApiBaseUrl}/failures`);
+
+  if (!response.ok) {
+    throw new Error("Hata verileri alınamadı");
+  }
+
+  return (await response.json()) as TelemetryData[];
+}

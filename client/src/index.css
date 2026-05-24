@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+:root {
+  --app-zoom: 1;
+  --page-panel-height: calc(100dvh - 8rem);
+}
+
 body {
   font-family: "Google Sans", sans-serif;
+  margin: 0;
   background-color: #09090b;
   color: white;
 }
@@ -15,7 +27,12 @@ body {
 }
 
 @media (max-width: 1500px) {
+  :root {
+    --app-zoom: 0.87;
+    --page-panel-height: calc((100dvh / var(--app-zoom)) - 8rem);
+  }
+
   body {
-    zoom: 87%;
+    zoom: var(--app-zoom);
   }
 }

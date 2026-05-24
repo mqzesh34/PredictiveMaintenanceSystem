@@ -18,8 +18,8 @@ function MainPage() {
     <>
       <TopBar data={data} isConnected={isConnected} />
 
-      <main className="mx-15 mb-8 grid h-[calc(100vh-8rem)] grid-cols-[2fr_1fr] gap-x-15">
-        <section className="grid min-h-0 grid-cols-2 grid-rows-[1fr_1fr_1.55fr] gap-6">
+      <main className="mx-15 mb-8 grid h-(--page-panel-height) grid-cols-[2fr_1fr] items-stretch gap-x-15">
+        <section className="grid h-full min-h-0 grid-cols-2 grid-rows-[1fr_1fr_1.55fr] gap-6">
           <div className={panelClass}>
             <LineMetricCard
               title="Makine Sıcaklığı"
@@ -61,7 +61,7 @@ function MainPage() {
           </div>
         </section>
 
-        <aside className={`${panelClass} min-h-0 overflow-hidden`}>
+        <aside className={`${panelClass} h-full min-h-0 overflow-hidden`}>
           <AnalysisPanel selectedFailure={selectedFailure} />
         </aside>
       </main>
