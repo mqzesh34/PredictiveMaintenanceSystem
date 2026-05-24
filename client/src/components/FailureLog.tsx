@@ -19,7 +19,11 @@ const timeFormatter = new Intl.DateTimeFormat("tr-TR", {
   second: "2-digit",
 });
 
-function FailureLog() {
+function FailureLog({
+  onAnalyze,
+}: {
+  onAnalyze: (failure: TelemetryData) => void;
+}) {
   const [failures, setFailures] = useState<TelemetryData[]>([]);
 
   useEffect(() => {
@@ -55,9 +59,14 @@ function FailureLog() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden p-8">
-      <h2 className="text-2xl font-bold tracking-tight text-white">
-        Canlı Uyarı Akışı
-      </h2>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-2xl font-bold tracking-tight text-white">
+          Canlı Uyarı Akışı
+        </h2>
+        <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold tracking-wide text-zinc-300">
+          Son 4
+        </span>
+      </div>
 
       {displayedFailures.length === 0 ? (
         <div className="flex flex-1 items-center justify-center">
@@ -112,6 +121,7 @@ function FailureLog() {
                     type="button"
                     aria-label="Analiz et"
                     title="Analiz et"
+                    onClick={() => onAnalyze(failure)}
                     className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 transition-all duration-200 hover:border-white/25 hover:bg-white/10 active:scale-95"
                   >
                     <span className="relative size-6">

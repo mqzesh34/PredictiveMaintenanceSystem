@@ -19,6 +19,7 @@ function getRequiredNumberEnv(name: string) {
 }
 
 export const env = {
+  aiApiBaseUrl: getRequiredEnv("VITE_AI_API_BASE_URL"),
   chartPointLimit: getRequiredNumberEnv("VITE_CHART_POINT_LIMIT"),
   rawChartPointLimit: getRequiredNumberEnv("VITE_RAW_CHART_POINT_LIMIT"),
   telemetryApiBaseUrl: getRequiredEnv("VITE_TELEMETRY_API_BASE_URL"),

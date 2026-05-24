@@ -1,22 +1,28 @@
+import { useState } from "react";
+import AnalysisPanel from "../components/AnalysisPanel";
 import FailureLog from "../components/FailureLog";
 import { LineMetricCard, ToolWearCard } from "../components/MetricCards";
 import TopBar from "../components/TopBar";
 import { useLiveTelemetry } from "../services/socketService";
+import type { TelemetryData } from "../types/telemetry";
 
 const panelClass = "rounded-[2rem] border border-white/10 bg-[#171719]";
 
 function MainPage() {
   const { data, history, isConnected } = useLiveTelemetry();
+  const [selectedFailure, setSelectedFailure] = useState<TelemetryData | null>(
+    null,
+  );
 
   return (
     <>
       <TopBar data={data} isConnected={isConnected} />
 
-      <main className="mx-15 mb-8 grid min-h-[calc(100vh-8rem)] grid-cols-[2fr_1fr] gap-x-[60px]">
-        <section className="grid grid-cols-2 grid-rows-[1fr_1fr_1.55fr] gap-6">
+      <main className="mx-15 mb-8 grid h-[calc(100vh-8rem)] grid-cols-[2fr_1fr] gap-x-15">
+        <section className="grid min-h-0 grid-cols-2 grid-rows-[1fr_1fr_1.55fr] gap-6">
           <div className={panelClass}>
             <LineMetricCard
-              title="Sıcaklık"
+              title="Hava Sıcaklığı"
               value={data?.airTemperature}
               unit="K"
               color="#f59e0b"
@@ -51,11 +57,13 @@ function MainPage() {
             <ToolWearCard value={data?.toolWear} />
           </div>
           <div className={`${panelClass} col-span-2`}>
-            <FailureLog />
+            <FailureLog onAnalyze={setSelectedFailure} />
           </div>
         </section>
 
-        <aside className={panelClass} />
+        <aside className={`${panelClass} min-h-0 overflow-hidden`}>
+          <AnalysisPanel selectedFailure={selectedFailure} />
+        </aside>
       </main>
     </>
   );
